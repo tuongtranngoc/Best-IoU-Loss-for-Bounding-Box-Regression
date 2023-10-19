@@ -2,4 +2,5 @@ YOLOv1/dataset/*
 YOLOv1/exps/*
 YOLOv1/logs/*
 YOLOV1/weights/*
-**/__pycache__/
+YOLOV1/models/weights/*
+**/__pycache__/**

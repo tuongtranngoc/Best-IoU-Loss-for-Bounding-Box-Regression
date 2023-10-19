@@ -1,9 +1,9 @@
-<head>
-    <style type="text/css">
-        figure{text-align: center;}
-        math{text-align: center;}
-    </style>
-</head>
+
+<style type="text/css">
+    figure{text-align: center;}
+    math{text-align: center;}
+</style>
+
 
 # Generalized Intersect over Union (GIoU)
 
