@@ -34,11 +34,11 @@ class IoULoss:
         x2 = torch.min(x[..., 2], y[..., 2])
         y2 = torch.min(x[..., 3], y[..., 3])
 
-        intersections = torch.clamp((x2-x1) * (y2-y1), min=0)
+        intersections = torch.clamp((x2-x1), 0) * torch.clamp((y2-y1), 0)
 
         # Compute Union
-        A = abs(x[..., 2]-x[..., 0]) * abs(x[..., 3]-x[..., 1])
-        B = abs(y[..., 2]-y[..., 0]) * abs(y[..., 3]-y[..., 1])
+        A = abs((x[..., 2]-x[..., 0]) * (x[..., 3]-x[..., 1]))
+        B = abs((y[..., 2]-y[..., 0]) * (y[..., 3]-y[..., 1]))
 
         unions = A + B - intersections
         iou = intersections / unions
