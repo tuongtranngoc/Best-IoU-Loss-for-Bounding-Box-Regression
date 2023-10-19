@@ -4,7 +4,7 @@ Object Detection consists of two sub-tasks: Object localization and object class
 
 Intersection over Union (IoU) is the metric measure to evaluate the accuracy of object detection model.
 
-$$IoU = \frac{A \cap B}{A \cup B} = \frac{I}{U}$$
+$$IoU = \frac{\mid A \cap B\mid}{\mid A \cup B\mid} = \frac{\mid I \mid}{\mid U \mid}$$
 
 The IoU value is computed based on ground-truth box and predicted box. During training model, the cost function is usually optimized to return the best of predicted box and compute IoU to evaluate model. The common cost functions are l1-norm distance or l2-norm distance.
 
