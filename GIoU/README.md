@@ -22,6 +22,14 @@ Cost function for bounding box regression:
 
 $$L_{GIoU} = 1-GIoU$$
 
+## Experiments
+I applied GIoU in loss function of YOLOv1 algorithm on PASCAL VOC 2007 testing dataset.
+
+| Backbone | mAP| mAP50 | mAP75 | 
+|---|---|---|---|
+| ResNet34 |  | |
+| ResNet34 + GIoU| 41.2| 64.5 | 44.0 | 
+
 ## References
 > + https://giou.stanford.edu/
 > + https://giou.stanford.edu/GIoU.pdf
