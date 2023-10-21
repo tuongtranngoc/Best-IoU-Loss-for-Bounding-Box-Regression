@@ -16,11 +16,18 @@ Second, the anchor box is set at the horizontal orientation. GIoU loss broadens 
     <img src='images/comparision_horizontal.jpg'>
 </p>
 
-Thrid, the anchor box is set at the vertical orientation. Similarly, GIoU loss broadens the bottom edge of predicted box to overlap with target box.
+Thrid, the anchor box is set at the vertical orientation. Similarly, GIoU loss broadens the bottom edge of predicted box to overlap with target box and these two boxes do not match in the final iteration.
 
 <p align='center'>
     <img src='images/comparision_vertical.jpg'>
 </p>
+
+To minimize the normalized distance between central points of two bounding boxes, and the penalty term can be defined as 
+
+$$R_{DIoU}=\frac{\rho^2 (b, b^{gt})}{c^2}$$
+where $b$ and $b^{gt}$ denote the central points of $B$ and $B^{gt}$, $\rho(.)$ is the Euclidean distance, and $c$ is the diagonal lenght of the smallest enclosing box covering the two boxes. And then the DIoU loss function can be defined as
+
+$$L_{DIoU}=1 - IoU + \frac{\rho^2 (b, b^{gt})}{c^2}$$
 
 
 ## Experiments
