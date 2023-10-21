@@ -14,6 +14,7 @@ import sys
 sys.path.insert(0, '../')
 from GIoU import giou
 from DIoU import diou
+from CIoU import ciou
 
 
 class SumSquaredError(nn.Module):
@@ -60,6 +61,8 @@ class SumSquaredError(nn.Module):
                 box_loss = 1 - giou.compute_loss(gt_bboxes, pred_bboxes)
             elif self.apply_IoU=="diou":
                 box_loss = 1 - diou.compute_loss(gt_bboxes, pred_bboxes)
+            elif self.apply_IoU=="ciou":
+                box_loss = 1 - ciou.compute_loss(gt_bboxes, pred_bboxes)
             else:
                 raise Exception("If using apply_IoU, Please use one of following loss functions: GIoU, DIoU")
             box_loss = box_loss[one_obj_ij].mean()
