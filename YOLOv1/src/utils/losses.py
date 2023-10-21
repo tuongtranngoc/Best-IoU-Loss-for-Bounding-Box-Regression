@@ -10,6 +10,11 @@ import torch.nn.functional as F
 from ..utils import cfg
 from .torch_utils import *
 
+import sys
+sys.path.insert(0, '../')
+from GIoU import giou
+from DIoU import diou
+
 
 class SumSquaredError(nn.Module):
     def __init__(self, lambda_coord=5.0, lambda_noobj=0.5, apply_IoU=None) -> None:
@@ -48,11 +53,13 @@ class SumSquaredError(nn.Module):
         one_noobj_ij = ~one_obj_ij
         
         # Apply IOU loss for bounding box regression
+        gt_bboxes = BoxUtils.decode_yolo(gt_bboxes[..., :4])
+        pred_bboxes = BoxUtils.decode_yolo(pred_bboxes[..., :4])
         if self.apply_IoU is not None:
             if self.apply_IoU=="giou":
-                box_loss = 1 - IoULoss.compute_GIoU(gt_bboxes, pred_bboxes)
+                box_loss = 1 - giou.compute_loss(gt_bboxes, pred_bboxes)
             elif self.apply_IoU=="diou":
-                box_loss = 1 - IoULoss.compute_DIoU(gt_bboxes, pred_bboxes)
+                box_loss = 1 - diou.compute_loss(gt_bboxes, pred_bboxes)
             else:
                 raise Exception("If using apply_IoU, Please use one of following loss functions: GIoU, DIoU")
             box_loss = box_loss[one_obj_ij].mean()

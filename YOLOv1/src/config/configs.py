@@ -22,7 +22,7 @@ class Configuration:
         "bz_train": 24,
         "bz_valid": 8,
         "n_workers": 8,
-        "iou_thresh": 0.5,
+        "iou_thresh": 0.4,
         "conf_thresh": 0.45,
         "apply_iou": 'giou'
     })

@@ -18,11 +18,11 @@ def compute_loss(target_bboxes, pred_bboxes):
     x2 = torch.min(target_bboxes[..., 2], pred_bboxes[..., 2])
     y2 = torch.min(target_bboxes[..., 3], pred_bboxes[..., 3])
 
-    intersections = torch.clamp((x2-x1) * (y2-y1), min=0)
+    intersections = torch.clamp(x2-x1, 0) * torch.clamp(y2-y1, 0)
 
     # Compute Union
-    A = abs(target_bboxes[..., 2]-target_bboxes[..., 0]) * abs(target_bboxes[..., 3]-target_bboxes[..., 1])
-    B = abs(pred_bboxes[..., 2]-pred_bboxes[..., 0]) * abs(pred_bboxes[..., 3]-pred_bboxes[..., 1])
+    A = abs((target_bboxes[..., 2]-target_bboxes[..., 0]) * (target_bboxes[..., 3]-target_bboxes[..., 1]))
+    B = abs((pred_bboxes[..., 2]-pred_bboxes[..., 0]) * (pred_bboxes[..., 3]-pred_bboxes[..., 1]))
 
     unions = A + B - intersections
     iou = intersections / unions
