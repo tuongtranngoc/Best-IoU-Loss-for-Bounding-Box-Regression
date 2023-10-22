@@ -35,8 +35,8 @@ $$L_{DIoU}=1 - IoU + \frac{\rho^2 (b, b^{gt})}{c^2}$$
 |Backbone|mAP|mAP50|mAP75|
 |--|--|--|--|
 |ResNet34||||
-|ResNet34+GIoU||||
-|ResNet34+DIoU||||
+| ResNet34 + GIoU| 41.2| 64.5 | 44.0 | 
+| ResNet34 + DIoU| 42.0| 64.8 | 44.8 |
 
 ## References
 + https://github.com/Zzh-tju/DIoU

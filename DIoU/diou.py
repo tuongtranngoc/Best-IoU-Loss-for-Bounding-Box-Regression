@@ -33,7 +33,7 @@ def compute_loss(target_bboxes, pred_bboxes):
     
     c_dist = ((target_bboxes[..., 2] + target_bboxes[..., 0] - pred_bboxes[..., 2] - pred_bboxes[..., 0]) ** 2 + \
               (target_bboxes[..., 3] + target_bboxes[..., 1] - pred_bboxes[..., 3] - pred_bboxes[..., 1]) ** 2) / 4
-    diagonal_l2 = torch.clamp((cx2-cx1), 0) **2 + torch.clamp((cy2-cy1), 0) ** 2
+    diagonal_l2 = (cx2-cx1) **2 + (cy2-cy1) ** 2 
     
     return ious - c_dist / diagonal_l2
 

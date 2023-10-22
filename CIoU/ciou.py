@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import torch
+import math
 
 
 def compute_loss(target_bboxes, pred_bboxes):
@@ -17,15 +18,15 @@ def compute_loss(target_bboxes, pred_bboxes):
     x2 = torch.min(target_bboxes[..., 2], pred_bboxes[..., 2])
     y2 = torch.min(target_bboxes[..., 3], pred_bboxes[..., 3])
 
-    instersects = torch.clamp(x2-x1, min=0) * torch.clamp(y2-y1, min=0)
+    intersects = torch.clamp((x2-x1), min=0.0) * torch.clamp((y2-y1), min=0.0)
 
     # Compute unions
     A = abs((target_bboxes[..., 2]-target_bboxes[..., 0]) * target_bboxes[..., 3]-target_bboxes[..., 1])
     B = abs((pred_bboxes[..., 2]-pred_bboxes[..., 0]) * pred_bboxes[..., 3]-pred_bboxes[..., 1])
 
-    unions = A + B - instersects
+    unions = A + B - intersects
 
-    ious = instersects / unions
+    ious = intersects / unions
 
     cx1 = torch.min(target_bboxes[..., 0], pred_bboxes[..., 0])
     cy1 = torch.min(target_bboxes[..., 1], pred_bboxes[..., 1])
@@ -35,12 +36,17 @@ def compute_loss(target_bboxes, pred_bboxes):
     # Compute Euclidean between central points and diagonal lenght
     c_dist = ((target_bboxes[..., 2] + target_bboxes[..., 0] - pred_bboxes[..., 2] - pred_bboxes[..., 0]) ** 2 + \
               (target_bboxes[..., 3] + target_bboxes[..., 1] - pred_bboxes[..., 3] - pred_bboxes[..., 1]) ** 2) / 4
-    diagonal_l2 = torch.clamp((cx2-cx1), 0) **2 + torch.clamp((cy2-cy1), 0) ** 2
+    
+    diagonal_l2 = (cx2-cx1) **2 + (cy2-cy1) ** 2
 
     # Postive trade-off parameter and asspect ratio
-    v = 4 * (torch.arctan((target_bboxes[..., 2]-target_bboxes[..., 0])/(target_bboxes[..., 3]-target_bboxes[..., 1]))- \
-             torch.arctan((pred_bboxes[..., 2]-pred_bboxes[..., 0])/(pred_bboxes[..., 3]-pred_bboxes[..., 1]))) ** 2 / (torch.pi**2)
-    alpha = v / (1-ious+v)
+    with torch.no_grad():
+        v = (4/math.pi**2) * torch.pow((torch.atan((target_bboxes[..., 2]-target_bboxes[..., 0])/(target_bboxes[..., 3]-target_bboxes[..., 1]))- \
+            torch.atan((pred_bboxes[..., 2]-pred_bboxes[..., 0])/(pred_bboxes[..., 3]-pred_bboxes[..., 1]))), 2)
+        alpha = v / (1 - ious + v)
 
-    return ious - c_dist / diagonal_l2 + v * alpha
+    cious = ious - (c_dist / diagonal_l2 + alpha * v)
+    cious = torch.clamp(cious, min=-1.0, max=1.0)
+
+    return cious
 
