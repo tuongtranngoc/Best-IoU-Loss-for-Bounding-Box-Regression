@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0 python -m src.predict --backbone resnet34 --weight_path src/weights/resnet34/best.pt

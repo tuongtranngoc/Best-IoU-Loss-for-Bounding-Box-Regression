@@ -23,7 +23,7 @@ class Predictor:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = YoloModel(
             input_size=cfg.models.image_size[0],
-            backbone=self.args.model_type,
+            backbone=self.args.backbone,
             num_classes=cfg.models.num_classes,
             pretrained=False).to(self.device)
         self.model = self.load_weight(self.model, self.args.weight_path)
@@ -59,9 +59,9 @@ class Predictor:
 
 def cli():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_type', type=str, default='resnet34',
+    parser.add_argument('--backbone', type=str, default='resnet18',
                         help='Model selection: resnet18, resnet34, resnet50')
-    parser.add_argument('--weight_path', type=str, 
+    parser.add_argument('--weight_path', type=str, default=cfg.debugging.ckpt_dirpath,
                         help='Path to model weight')
     parser.add_argument('--input_folder', type=str,
                         help='Path to input images')

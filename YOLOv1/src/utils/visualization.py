@@ -94,7 +94,7 @@ class Debuger:
                 pred_bboxes, pred_conf, pred_cls = BoxUtils.nms(pred_bboxes, 
                                                                 pred_conf, 
                                                                 pred_cls, 
-                                                                iou_thresh=cfg.models.iou_thresh, conf_thresh=cfg.models.conf_thresh)
+                                                                iou_thresh=cfg.trainval.iou_thresh, conf_thresh=cfg.trainval.conf_thresh)
 
             gt_bboxes, gt_conf, gt_cls = Vizualization.label2numpy(gt_bboxes, gt_conf, gt_cls)
             pred_bboxes, pred_conf, pred_cls = Vizualization.label2numpy(pred_bboxes, pred_conf, pred_cls)

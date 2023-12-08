@@ -24,49 +24,6 @@ class IoULoss:
         intersects[intersects.gt(0)] = intersects[intersects.gt(0)] / unions[intersects.gt(0)]
         return intersects
 
-    @classmethod
-    def compute_GIoU(cls, target, pred):
-        x = BoxUtils.decode_yolo(target[..., :4])
-        y = BoxUtils.decode_yolo(pred[..., :4])
-
-        x1 = torch.max(x[..., 0], y[..., 0])
-        y1 = torch.max(x[..., 1], y[..., 1])
-        x2 = torch.min(x[..., 2], y[..., 2])
-        y2 = torch.min(x[..., 3], y[..., 3])
-        intersects = torch.clamp((x2-x1), 0) * torch.clamp((y2-y1), 0)
-        unions = abs((x[..., 2] - x[..., 0]) * (x[..., 3] - x[..., 1])) + abs((y[..., 2] - y[..., 0]) * (y[..., 3] - y[..., 1])) - intersects
-        intersects[intersects.gt(0)] = intersects[intersects.gt(0)] / unions[intersects.gt(0)]
-        
-        cx1 = torch.min(x[..., 0], y[..., 0])
-        cy1 = torch.min(x[..., 1], y[..., 1])
-        cx2 = torch.max(x[..., 2], y[..., 2])
-        cy2 = torch.max(x[..., 3], y[..., 3])
-        c_intersects = (cx2-cx1) * (cy2-cy1)
-    
-        return intersects - (c_intersects - unions) / c_intersects
-
-    @classmethod
-    def compute_DIoU(cls, target, pred):
-        x = BoxUtils.decode_yolo(target[..., :4])
-        y = BoxUtils.decode_yolo(pred[..., :4])
-
-        x1 = torch.max(x[..., 0], y[..., 0])
-        y1 = torch.max(x[..., 1], y[..., 1])
-        x2 = torch.min(x[..., 2], y[..., 2])
-        y2 = torch.min(x[..., 3], y[..., 3])
-        intersects = torch.clamp((x2-x1), 0) * torch.clamp((y2-y1), 0)
-        unions = abs((x[..., 2] - x[..., 0]) * (x[..., 3] - x[..., 1])) + abs((y[..., 2] - y[..., 0]) * (y[..., 3] - y[..., 1])) - intersects
-        intersects[intersects.gt(0)] = intersects[intersects.gt(0)] / unions[intersects.gt(0)]
-
-        cx1 = torch.min(x[..., 0], y[..., 0])
-        cy1 = torch.min(x[..., 1], y[..., 1])
-        cx2 = torch.max(x[..., 2], y[..., 2])
-        cy2 = torch.max(x[..., 3], y[..., 3])
-        c_dist = ((x[..., 2] + x[..., 0] - y[..., 2] - y[..., 0]) ** 2 + (x[..., 3]+ x[..., 1] - y[..., 3] - y[..., 1]) ** 2) / 4
-        diagonal_l2 = torch.clamp((cx2-cx1), 0) **2 + torch.clamp((cy2-cy1), 0) ** 2
-
-        return intersects - c_dist / diagonal_l2
-
 
 class BoxUtils:
     S = cfg.models.grid_size
@@ -124,14 +81,14 @@ class BoxUtils:
             raise Exception(f"{image} is a type of {type(image)}, not numpy/tensor type")
         
     @classmethod
-    def nms(self, pred_bboxes, pred_confs, pred_cls, iou_thresh, conf_thresh):
+    def nms(self, y, pred_confs, pred_cls, iou_thresh, conf_thresh):
         conf_mask = torch.where(pred_confs>=conf_thresh)[0]
-        pred_bboxes = pred_bboxes[conf_mask]
+        y = y[conf_mask]
         pred_confs = pred_confs[conf_mask]
         pred_cls = pred_cls[conf_mask]
 
-        idxs = torchvision.ops.nms(pred_bboxes, pred_confs, iou_thresh)
-        nms_bboxes = pred_bboxes[idxs]
+        idxs = torchvision.ops.nms(y, pred_confs, iou_thresh)
+        nms_bboxes = y[idxs]
         nms_confs = pred_confs[idxs]
         nms_classes = pred_cls[idxs]
         

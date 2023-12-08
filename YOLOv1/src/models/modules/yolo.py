@@ -9,6 +9,8 @@ from .backbone import build_backbone
 from .neck import ConvBlock
 from .head import YoloHead
 
+import os
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
@@ -35,6 +37,7 @@ class YoloModel(nn.Module):
         
         if pretrained:
             download_path = ROOT / "weights" / f"yolov1-{backbone}.pt"
+            os.makedirs(os.path.dirname(download_path), exist_ok=True)
             if not download_path.is_file():
                 gdown.download(model_urls[f"yolov1-{backbone}"], str(download_path), quiet=False, fuzzy=True)
             ckpt = torch.load(download_path, map_location="cpu")
@@ -50,5 +53,5 @@ class YoloModel(nn.Module):
         pred_box = torch.sigmoid(out[..., :8])
         pred_obj = torch.sigmoid(out[..., 8:10])
         pred_cls = torch.sigmoid(out[..., 10:])
-   
+        
         return torch.cat((pred_box, pred_obj, pred_cls), dim=-1)
