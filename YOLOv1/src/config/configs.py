@@ -14,17 +14,18 @@ class Configuration:
         "txt_train_path": ["dataset/VOC/images_id/trainval2007.txt", "dataset/VOC/images_id/trainval2012.txt"],
         "txt_val_path": ['dataset/VOC/images_id/test2007.txt'],
         "label2id": "dataset/VOC/label_to_id.json",
+
     })
 
     trainval = EasyDict({
-        "epochs": 150,
+        "epochs": 200,
         "eval_step": 5,
         "bz_train": 24,
         "bz_valid": 8,
         "n_workers": 8,
-        "iou_thresh": 0.4,
-        "conf_thresh": 0.45,
-        "apply_iou": 'giou'
+        "iou_thresh": 0.7,
+        "conf_thresh": 0.1,
+        "apply_iou": "GIoU"
     })
 
     debugging = EasyDict({

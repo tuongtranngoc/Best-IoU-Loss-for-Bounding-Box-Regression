@@ -62,11 +62,9 @@ class Trainer:
     def create_model(self):
         self.model = YoloModel(
             input_size=cfg.models.image_size[0],
-            backbone=self.args.backbone,
+            backbone=self.args.model_type,
             num_classes=cfg.models.num_classes,
             pretrained=True,).to(self.device)
-        if cfg.trainval.apply_iou is not None:
-            logger.info(f'Apply {cfg.trainval.apply_iou} for loss function ...')
         self.loss_fn = SumSquaredError(apply_IoU=cfg.trainval.apply_iou).to(self.device)
         #self.optimizer = torch.optim.SGD(self.model.parameters(), momentum=0.9, weight_decay=5e-4, lr=1e-3)
         #self.lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [90, 120], gamma=0.1)
@@ -74,7 +72,7 @@ class Trainer:
         
         if self.args.resume:
             logger.info("Resuming training ...")
-            last_ckpt = os.path.join(cfg.debugging.ckpt_dirpath, self.args.backbone, 'last.pt')
+            last_ckpt = os.path.join(cfg.debugging.ckpt_dirpath, self.args.model_type, 'last.pt')
             if os.path.exists(last_ckpt):
                 ckpt = torch.load(last_ckpt, map_location=self.device)
                 self.start_epoch = self.resume_training(ckpt)
@@ -134,10 +132,10 @@ class Trainer:
 
                 if metrics["eval_map_50"].get_value("mean") > self.best_map:
                     self.best_map = metrics["eval_map_50"].get_value("mean")
-                    best_ckpt = os.path.join(cfg.debugging.ckpt_dirpath, self.args.backbone, 'best.pt')
+                    best_ckpt = os.path.join(cfg.debugging.ckpt_dirpath, self.args.model_type, 'best.pt')
                     self.save_ckpt(best_ckpt, self.best_map, epoch)
 
-            last_ckpt = os.path.join(cfg.debugging.ckpt_dirpath, self.args.backbone, 'last.pt')
+            last_ckpt = os.path.join(cfg.debugging.ckpt_dirpath, self.args.model_type, 'last.pt')
             self.save_ckpt(last_ckpt, self.best_map, epoch)
 
             # Debug image at each training time
@@ -183,7 +181,7 @@ class Trainer:
 
 def cli():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--backbone', type=str, default='resnet50',
+    parser.add_argument('--model_type', type=str, default='resnet50',
                         help='Model selection contain: vgg16, vgg16-bn, resnet18, resnet34')
     parser.add_argument('--resume', nargs='?', const=True, default=False, 
                         help='Resume most recent training')

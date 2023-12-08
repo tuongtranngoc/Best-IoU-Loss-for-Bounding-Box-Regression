@@ -14,7 +14,7 @@ from torch.utils.data import Dataset
 from ..data import logger
 
 
-class BaseDataset(Dataset):
+class BaseDatset(Dataset):
     def __init__(self) -> None:
         pass
 
@@ -45,7 +45,7 @@ class BaseDataset(Dataset):
             for ann in anns:
                 if ann['iscrowd']: continue
                 bbox = ann['bbox']
-                cate = ann['category_id'] - 1
+                cate = ann['category_id']- 1
                 bbox_info = [cate] + bbox
                 if bbox_info not in bboxes:
                     bboxes.append(bbox_info)
@@ -73,7 +73,7 @@ class BaseDataset(Dataset):
                         anno.object = [anno.object]
                     bboxes = []
                     for item in anno.object:
-                        if item.difficult == '1': continue
+                        if item.difficult == '1' or item.name not in id_map: continue
                         box = item.bndbox
                         box = [box.xmin, box.ymin, box.xmax, box.ymax]
                         box = [eval(c) for c in box]

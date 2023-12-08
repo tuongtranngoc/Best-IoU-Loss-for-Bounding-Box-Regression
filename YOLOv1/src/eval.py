@@ -120,7 +120,7 @@ def cli():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weight_type', type=str, default='best.pt',
                         help='weight type: best.pt/last.pt')
-    parser.add_argument('--backbone', type=str, default='resnet18',
+    parser.add_argument('--model_type', type=str, default='resnet34',
                         help='Model selection contain: vgg16, vgg16-bn, resnet18, resnet34, resnet50')
     parser.add_argument('--bz_eval', type=int, default=cfg.trainval.bz_valid,
                         help='Batch size valid dataset')
@@ -144,10 +144,10 @@ if __name__ == "__main__":
             cfg.dataset.txt_val_path)
     model = YoloModel(
             input_size=cfg.models.image_size[0],
-            backbone=args.backbone,
+            backbone=args.model_type,
             num_classes=cfg.models.num_classes,
             pretrained=False).to(device)
-    ckpt_path = os.path.join(cfg.debugging.ckpt_dirpath, args.backbone, args.weight_type)
+    ckpt_path = os.path.join(cfg.debugging.ckpt_dirpath, args.model_type, args.weight_type)
     ckpt = torch.load(ckpt_path, map_location=device)
     model.load_state_dict(ckpt["model"])
     eval = VocEval(dataset, model, args.bz_eval, False, args.n_workers, False, args.iou_thresh, args.conf_thresh)

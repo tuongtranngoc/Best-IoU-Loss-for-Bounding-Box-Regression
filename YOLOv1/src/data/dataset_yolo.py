@@ -4,13 +4,13 @@ import cv2
 from .utils import *
 from ..data import cfg
 from .augmentation import *
-from .dataset import BaseDataset
+from .dataset import BaseDatset
 
 import torch
 import torch.nn.functional as F
 
 
-class YoloDatset(BaseDataset):
+class YoloDatset(BaseDatset):
     def __init__(self, image_path, label_path, txt_path, is_augment=False) -> None:
         self.aug = AlbumAug()
         self.txt_path = txt_path
@@ -25,7 +25,7 @@ class YoloDatset(BaseDataset):
         image = cv2.imread(image_pth)
         if self.is_augment:
             image, bboxes, labels = self.aug(image, bboxes, labels)
-    
+
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image, bboxes, labels = self.tranform(image, bboxes, labels)
         return image, bboxes, labels
@@ -64,7 +64,7 @@ class YoloDatset(BaseDataset):
                 (y_c - (pos_j * grid_cell_j)) / grid_cell_j, 
                 np.sqrt((x_max - x_min) / self.image_size[0]), 
                 np.sqrt((y_max - y_min) / self.image_size[1])]).repeat(B)
-            
+        
             # Assign bboxes to each grid cell
             grid_cell = torch.cat([box, conf_cls, p_cls], dim=-1)
             target_cxcywh[pos_j, pos_i, :] = grid_cell
